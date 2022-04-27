@@ -1,10 +1,11 @@
-const stages = require('express').Router()
+const Stages = require('express').Router()
 const db = require('../models')
-const { stage } = db
+const { stage, events } = db
 const { Op } = require('sequelize')
+const stage_events = require('../models/stage_events')
 
 // FIND ALL STAGES
-stages.get('/', async (req, res) => {
+Stages.get('/', async (req, res) => {
     try {
         const foundStages = await stage.findAll()
         res.status(200).json(foundStages)
@@ -15,10 +16,10 @@ stages.get('/', async (req, res) => {
 
 
 // FIND A SPECIFIC STAGE
-stages.get('/:id', async (req, res) => {
+Stages.get('/:name', async (req, res) => {
     try {
         const foundStage = await stage.findOne({
-            where: { stage_id: req.params.id }
+            where: { stage_name: req.params.name }
         })
         res.status(200).json(foundStage)
     } catch (error) {
@@ -27,7 +28,7 @@ stages.get('/:id', async (req, res) => {
 })
 
 // CREATE A STAGE
-stages.post('/', async (req, res) => {
+Stages.post('/', async (req, res) => {
     console.log('hit post endpoint')
     try {
         const newStage = await stage.create(req.body)
@@ -41,11 +42,11 @@ stages.post('/', async (req, res) => {
 })
 
 // UPDATE A STAGE
-stages.put('/:id', async (req, res) => {
+Stages.put('/:name', async (req, res) => {
     try {
         const updatedStages = await stage.update(req.body, {
             where: {
-                stage_id: req.params.id
+                stage_name: req.params.name
             }
         })
         res.status(200).json({
@@ -58,11 +59,11 @@ stages.put('/:id', async (req, res) => {
 
 
 // DELETE A STAGE
-stages.delete('/:id', async (req, res) => {
+Stages.delete('/:name', async (req, res) => {
     try {
         const deletedStages = await stage.destroy({
             where: {
-                stage_id: req.params.id
+                stage_name: req.params.name
             }
         })
         res.status(200).json({
@@ -76,4 +77,4 @@ stages.delete('/:id', async (req, res) => {
 
 
 
-module.exports = stages
+module.exports = Stages

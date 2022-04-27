@@ -1,14 +1,15 @@
 const events = require('express').Router()
 const db = require('../models')
-const { event } = db
+const { event, meet_greet, set_time, stage, Band, stage_events } = db
 const { Op } = require('sequelize')
+const Stages = require('./stage_controller')
 
 // FIND ALL EVENTS
-events.get('/', async (req,res) => {
+events.get('/', async (req, res) => {
     try {
         const foundEvents = await event.findAll({
-            order: [ ['date', 'ASC'] ]
-        }) 
+            order: [['date', 'ASC']]
+        })
         res.status(200).json(foundEvents)
     } catch (error) {
         res.status(500).json(error)
@@ -16,10 +17,44 @@ events.get('/', async (req,res) => {
 })
 
 // FIND A SPECIFIC EVENT
-events.get('/:id', async (req, res) => {
+events.get('/:name', async (req, res) => {
     try {
         const foundEvent = await event.findOne({
-            where: { event_id: req.params.id }
+            where: { name: req.params.name },
+            // Couldn't get the code below to work. Kept getting a 500 error when going to the endpoint
+            // include: [
+            //     {
+            //         model: meet_greet,
+            //         as: "meet_greets",
+            //         include: {
+            //             model: Band,
+            //             as: "band",
+            //         }
+            //     },
+            //     {
+            //         model: set_time,
+            //         as: "set_times",
+            //         include: [
+            //             {
+            //                 model: Band,
+            //                 as: "band",
+            //             },
+            //             {
+            //                 model: stage,
+            //                 as: "stage"
+            //             }
+            //         ]
+            //     },
+            //     {
+            //         model: stage,
+            //         as: "stages",
+            //         include: {
+            //             model: stage_events,
+            //             as: "StageEvent"
+            //         }
+
+            //     }
+            // ]
         })
         res.status(200).json(foundEvent)
     } catch (error) {
@@ -35,39 +70,39 @@ events.post('/', async (req, res) => {
             message: 'Successfully inserted a new event',
             data: newEvent
         })
-    } catch(err) {
+    } catch (err) {
         res.status(500).json(err)
     }
 })
 
 // UPDATE AN EVENT
-events.put('/:id', async (req, res) => {
+events.put('/:name', async (req, res) => {
     try {
         const updatedEvents = await event.update(req.body, {
             where: {
-                event_id: req.params.id
+                name: req.params.name
             }
         })
         res.status(200).json({
             message: `Successfully updated ${updatedEvents} event(s)`
         })
-    } catch(err) {
+    } catch (err) {
         res.status(500).json(err)
     }
 })
 
 // DELETE AN EVENT
-events.delete('/:id', async (req, res) => {
+events.delete('/:name', async (req, res) => {
     try {
         const deletedEvents = await event.destroy({
             where: {
-                event_id: req.params.id
+                name: req.params.name
             }
         })
         res.status(200).json({
             message: `Successfully deleted ${deletedEvents} event(s)`
         })
-    } catch(err) {
+    } catch (err) {
         res.status(500).json(err)
     }
 })

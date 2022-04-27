@@ -8,10 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      stage_events_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
       stage_id: {
         type: Sequelize.INTEGER,
         allowNull: false
